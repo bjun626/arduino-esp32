@@ -41,7 +41,7 @@ public:
 
 class SPIClass
 {
-private:
+public:
     int8_t _spi_num;
     spi_t * _spi;
     bool _use_hw_ss;
