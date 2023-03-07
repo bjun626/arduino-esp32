@@ -1,4 +1,4 @@
-esp-idf: v4.4.4 e8bdaf9198
+esp-idf: release/v4.4 4c2afac355
 arduino: idf-release/v4.4 7eee40b9
 esp-dl: master 0632d24
 esp-insights: main 4781e13
