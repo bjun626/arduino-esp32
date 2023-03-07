@@ -6,5 +6,5 @@ esp-rainmaker: master b863717
 esp-sr: master e2b9e0f
 esp32-camera: master 2478a5f
 esp_littlefs: master fb1470a
-espressif__esp-dsp: master 3ce0ca8
+espressif__esp-dsp: master 0126624
 tinyusb: master 3387c8610
