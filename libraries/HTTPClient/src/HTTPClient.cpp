@@ -300,7 +300,7 @@ bool HTTPClient::beginInternal(String url, const char* expectedProtocol)
     }
     _host = the_host;
     _uri = url;
-    log_d("protocol: %s, host: %s port: %d url: %s", _protocol.c_str(), _host.c_str(), _port, _uri.c_str());
+    log_v("protocol: %s, host: %s port: %d url: %s", _protocol.c_str(), _host.c_str(), _port, _uri.c_str());
     return true;
 }
 
@@ -318,7 +318,7 @@ bool HTTPClient::begin(String host, uint16_t port, String uri)
     _port = port;
     _uri = uri;
     _transportTraits = TransportTraitsPtr(new TransportTraits());
-    log_d("host: %s port: %d uri: %s", host.c_str(), port, uri.c_str());
+    log_v("host: %s port: %d uri: %s", host.c_str(), port, uri.c_str());
     return true;
 }
 
@@ -385,14 +385,14 @@ void HTTPClient::disconnect(bool preserveClient)
 {
     if(connected()) {
         if(_client->available() > 0) {
-            log_d("still data in buffer (%d), clean up.\n", _client->available());
+            log_v("still data in buffer (%d), clean up.\n", _client->available());
                 _client->flush();
         }
 
         if(_reuse && _canReuse) {
-            log_d("tcp keep open for reuse");
+            log_v("tcp keep open for reuse");
         } else {
-            log_d("tcp stop");
+            log_v("tcp stop");
             _client->stop();
             if(!preserveClient) {
                 _client = nullptr;
@@ -405,7 +405,7 @@ void HTTPClient::disconnect(bool preserveClient)
             }
         }
     } else {
-        log_d("tcp is closed\n");
+        log_v("tcp is closed\n");
     }
 }
 
@@ -595,7 +595,7 @@ int HTTPClient::sendRequest(const char * type, uint8_t * payload, size_t size)
             }
         }
 
-        log_d("request type: '%s' redirCount: %d\n", type, redirectCount);
+        log_v("request type: '%s' redirCount: %d\n", type, redirectCount);
         
         // connect to server
         if(!connect()) {
@@ -625,7 +625,7 @@ int HTTPClient::sendRequest(const char * type, uint8_t * payload, size_t size)
         }
 
         code = handleHeaderResponse();
-        log_d("sendRequest code=%d\n", code);
+        log_v("sendRequest code=%d\n", code);
 
         // Handle redirections as stated in RFC document:
         // https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
@@ -652,7 +652,7 @@ int HTTPClient::sendRequest(const char * type, uint8_t * payload, size_t size)
                         !strcmp(type, "HEAD")
                     ) {
                         redirectCount += 1;
-                        log_d("following redirect (the same method): '%s' redirCount: %d\n", _location.c_str(), redirectCount);
+                        log_v("following redirect (the same method): '%s' redirCount: %d\n", _location.c_str(), redirectCount);
                         if (!setURL(_location)) {
                             log_d("failed setting URL for redirection\n");
                             // no redirection
@@ -825,7 +825,7 @@ int HTTPClient::sendRequest(const char * type, Stream * stream, size_t size)
             log_d("ERROR SEND PAYLOAD FAILED!");
             return returnError(HTTPC_ERROR_SEND_PAYLOAD_FAILED);
         } else {
-            log_d("Stream payload written: %d", bytesWritten);
+            log_v("Stream payload written: %d", bytesWritten);
         }
 
     } else {
@@ -1113,9 +1113,9 @@ bool HTTPClient::connect(void)
 {
     if(connected()) {
         if(_reuse) {
-            log_d("already connected, reusing connection");
+            log_v("already connected, reusing connection");
         } else {
-            log_d("already connected, try reuse!");
+            log_v("already connected, try reuse!");
         }
         while(_client->available() > 0) {
             _client->read();
@@ -1153,7 +1153,7 @@ bool HTTPClient::connect(void)
     // set Timeout for WiFiClient and for Stream::readBytesUntil() and Stream::readStringUntil()
     _client->setTimeout((_tcpTimeout + 500) / 1000);	
 
-    log_d(" connected to %s:%u", _host.c_str(), _port);
+    log_v(" connected to %s:%u", _host.c_str(), _port);
 
 
 /*
@@ -1304,14 +1304,14 @@ int HTTPClient::handleHeaderResponse()
             }
 
             if(headerLine == "") {
-                log_d("code: %d", _returnCode);
+                log_v("code: %d", _returnCode);
 
                 if(_size > 0) {
-                    log_d("size: %d", _size);
+                    log_v("size: %d", _size);
                 }
 
                 if(transferEncoding.length() > 0) {
-                    log_d("Transfer-Encoding: %s", transferEncoding.c_str());
+                    log_v("Transfer-Encoding: %s", transferEncoding.c_str());
                     if(transferEncoding.equalsIgnoreCase("chunked")) {
                         _transferEncoding = HTTPC_TE_CHUNKED;
                     } else if(transferEncoding.equalsIgnoreCase("identity")) {
@@ -1443,7 +1443,7 @@ int HTTPClient::writeToStreamDataBlock(Stream * stream, int size)
 
         free(buff);
 
-        log_d("connection closed or file end (written: %d).", bytesWritten);
+        log_v("connection closed or file end (written: %d).", bytesWritten);
 
         if((size > 0) && (size != bytesWritten)) {
             log_d("bytesWritten %d and size %d mismatch!.", bytesWritten, size);
@@ -1468,7 +1468,7 @@ int HTTPClient::returnError(int error)
     if(error < 0) {
         log_w("error(%d): %s", error, errorToString(error).c_str());
         if(connected()) {
-            log_d("tcp stop");
+            log_v("tcp stop");
             _client->stop();
         }
     }
