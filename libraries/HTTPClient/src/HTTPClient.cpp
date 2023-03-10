@@ -618,23 +618,26 @@ int HTTPClient::sendRequest(const char * type, uint8_t * payload, size_t size)
         }
 
         // send Payload if needed
-#ifndef CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN 
-#define CHUNK_SIZE 16384
-#else
+#if defined(CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN)
 #define CHUNK_SIZE CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN
+#if defined(CONFIG_MBEDTLS_SSL_MAX_CONTENT_LEN)
+#define CHUNK_SIZE CONFIG_MBEDTLS_SSL_MAX_CONTENT_LEN
+#else
+#define CHUNK_SIZE 16384
 #endif
         if(payload && size > 0) {
             int cIndex;
             for (cIndex = 0; cIndex < size; cIndex = cIndex + CHUNK_SIZE) {
-            int left = size - cIndex;
-            if ( left > CHUNK_SIZE ) {
-                if(_client->write(&payload[cIndex], CHUNK_SIZE) != CHUNK_SIZE) {
-                return returnError(HTTPC_ERROR_SEND_PAYLOAD_FAILED);
+                int left = size - cIndex;
+                if ( left > CHUNK_SIZE ) {
+                    if(_client->write(&payload[cIndex], CHUNK_SIZE) != CHUNK_SIZE) {
+                    return returnError(HTTPC_ERROR_SEND_PAYLOAD_FAILED);
+                    }
                 }
-            }
-            else { // write last bit
-                if(_client->write(&payload[cIndex], left) != left) {
-                return returnError(HTTPC_ERROR_SEND_PAYLOAD_FAILED);
+                else { // write last bit
+                    if(_client->write(&payload[cIndex], left) != left) {
+                    return returnError(HTTPC_ERROR_SEND_PAYLOAD_FAILED);
+                    }
                 }
             }
         }
