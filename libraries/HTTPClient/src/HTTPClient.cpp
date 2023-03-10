@@ -620,7 +620,7 @@ int HTTPClient::sendRequest(const char * type, uint8_t * payload, size_t size)
         // send Payload if needed
 #if defined(CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN)
 #define CHUNK_SIZE CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN
-#if defined(CONFIG_MBEDTLS_SSL_MAX_CONTENT_LEN)
+#elif defined(CONFIG_MBEDTLS_SSL_MAX_CONTENT_LEN)
 #define CHUNK_SIZE CONFIG_MBEDTLS_SSL_MAX_CONTENT_LEN
 #else
 #define CHUNK_SIZE 16384
